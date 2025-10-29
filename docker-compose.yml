@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: mp2_mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: mp2_backend
+    env_file: .env
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    container_name: mp2_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
